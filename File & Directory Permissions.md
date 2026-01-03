@@ -100,9 +100,3 @@ chmod 644 Test/
 # Gives 777 (Full permission) to the directory AND 
 # all files/sub-folders inside it.
 chmod -R 777 Test/
-
-```
-
-```
-
-```
