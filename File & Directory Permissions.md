@@ -18,7 +18,6 @@ When you run `ls -l`, you see a string like `drwxrwxrwx`. This is divided into 4
 
 1.  **File Type** (1st char):
     * `d`: Directory
-    * `-`: Regular file
 2.  **Owner** (Next 3 chars): Permissions for the user who owns the file.
 3.  **Group** (Next 3 chars): Permissions for the group assigned to the file.
 4.  **Others** (Last 3 chars): Permissions for everyone else.
