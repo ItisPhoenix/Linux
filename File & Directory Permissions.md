@@ -12,9 +12,9 @@ Linux permissions control who can access files and directories and what they can
 
 ## 🧩 Understanding the Permission String
 
-When you run `ls -l`, you see a string like `drwxr-xr-x`. This is divided into 4 parts:
+When you run `ls -l`, you see a string like `drwxrwxrwx`. This is divided into 4 parts:
 
-`d` `rwx` `r-x` `r-x`
+`d` `rwx` `rwx` `rwx`
 
 1.  **File Type** (1st char):
     * `d`: Directory
