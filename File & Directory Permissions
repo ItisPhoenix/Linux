@@ -1,109 +1,85 @@
-# File & Directory Permissions
+# Linux File Management & Permissions Cheat Sheet
 
-Linux permissions control who can access files and directories and what they can do with them.
+## 📂 Part 1: File Management
 
-## 🔑 Permission Basics
+### Navigation
+| Command | Description |
+| :--- | :--- |
+| `pwd` | **P**resent **W**orking **D**irectory. Shows current path. |
+| `cd ..` | Step back to the parent (previous) directory. |
+| `cd /etc` | Change directory to the absolute path `/etc`. |
+| `cd ~` | Change directory to the current user's **home** directory. |
 
-| Symbol | Permission | Description | Octal Value |
-| :---: | :--- | :--- | :---: |
-| **r** | Read | Ability to open and view the file/directory contents. | **4** |
-| **w** | Write | Ability to modify, delete, or rename the file/directory. | **2** |
-| **x** | Execute | Ability to run the file as a program/script or enter a directory. | **1** |
+### Listing Files (`ls`)
+* `ls` : List files in simple format.
+* `ls -l` : List in **list** format (permissions, owner, size, date).
+* `ls -a` : List **all** files (including hidden files starting with `.`).
+* `ls -al` : Combination of list format + all files.
+* `ls -lh` : List format with **human-readable** sizes (KB, MB, GB).
+* `ls -lR Desktop/` : **Recursive** list (shows files in Desktop and all sub-folders).
 
-## 🧩 Understanding the Permission String
+### Creating & Viewing
+* `touch test.txt` : Creates an empty file named `test.txt`.
+* `mkdir Test` : Creates a directory named `Test`.
+* `echo "Hello"` : Prints "Hello" to the terminal.
+* `echo "Hello" > test.txt` : Redirects "Hello" **into** `test.txt` (overwrites content).
+* `cat [file]` : Displays content of a file.
+* `cat /etc/passwd > passwd.txt` : Saves content of `/etc/passwd` into `passwd.txt`.
+* `whatis [command]` : One-line description of a command.
 
-When you run `ls -l`, you see a string like `drwxr-xr-x`. This is divided into 4 parts:
+### Editors
+* `nano` : Simple terminal text editor.
+* `vim` : Complex, powerful text editor.
 
-`d` `rwx` `r-x` `r-x`
+### Manipulation (Copy, Move, Remove)
+* `cp file.txt Folder` : Copies `file.txt` to `Folder`.
+* `mv file.txt Folder/` : **Moves** `file.txt` to `Folder`.
+* `mv old.txt new.txt` : **Renames** `old.txt` to `new.txt`.
 
-1.  **File Type** (1st char):
-    * `d`: Directory
-    * `-`: Regular file
-2.  **Owner** (Next 3 chars): Permissions for the user who owns the file.
-3.  **Group** (Next 3 chars): Permissions for the group assigned to the file.
-4.  **Others** (Last 3 chars): Permissions for everyone else.
+> ⚠️ **Warning:** Deleted files are usually not recoverable.
 
-### User Categories
-* **u** = User (Owner)
-* **g** = Group
-* **o** = Other (Everyone else)
-* **a** = All (Owner + Group + Other)
+* `rm file.txt` : Removes a file.
+* `rmdir Folder` : Removes a directory (only if empty).
+* `rm -R Folder` : **Recursively** removes directory and all contents.
 
 ---
 
-## 🛠 The `chmod` Command
+## 🔐 Part 2: Permissions
 
-The `chmod` (Change Mode) command is used to change access permissions.
+### Permission Basics
+| Symbol | Type | Meaning | Octal Value |
+| :---: | :--- | :--- | :---: |
+| **r** | Read | View file contents / List directory | **4** |
+| **w** | Write | Modify file / Create or delete in directory | **2** |
+| **x** | Execute | Run script / Enter directory | **1** |
 
-### 1. Symbolic Mode
-Uses letters and operators (`+` add, `-` remove, `=` set exact).
+### Reading the Permission String
+Example: `drwxr-xr-x`
+1. **Type:** `d` (Directory) or `-` (File)
+2. **Owner:** `rwx` (Read, Write, Execute)
+3. **Group:** `r-x` (Read, Execute)
+4. **Others:** `r-x` (Read, Execute)
 
-```bash
-# Give Owner (user) Read, Write, and Execute
-chmod u=rwx test.sh
+### Changing Permissions (`chmod`)
 
-# Give Group and Others Read, Write, and Execute
-chmod go=rwx test.sh
+#### 1. Symbolic Mode
+Uses characters: `u` (user/owner), `g` (group), `o` (others), `a` (all).
+* `chmod u=rwx script.sh` : Owner gets Read, Write, Execute.
+* `chmod go=rwx script.sh` : Group and Others get Read, Write, Execute.
+* `chmod go-wx script.sh` : **Remove** Write and Execute from Group and Others.
+* `chmod g+x script.sh` : **Add** Execute permission to Group.
 
-# Remove Write and Execute from Group and Others
-chmod go-wx test.sh
-
-# Add Executable permission to the Group
-chmod g+x test.sh
-
-```
-
-### 2. Octal (Binary) Mode
-
-Uses numbers to represent permissions. You sum the values to get the desired permission set.
-
-* **4** = Read
-* **2** = Write
-* **1** = Execute
-* **0** = No permission
-
-**Common Calculations:**
-
-* `7` (4+2+1) = Read + Write + Execute
-* `6` (4+2) = Read + Write
-* `5` (4+1) = Read + Execute
-* `4` = Read only
+#### 2. Octal (Number) Mode
+Sum the values: Read(4) + Write(2) + Execute(1).
+* **7** = `rwx` (4+2+1)
+* **6** = `rw-` (4+2)
+* **5** = `r-x` (4+1)
+* **4** = `r--` (4)
 
 **Examples:**
+* `chmod 444 file.sh` : Everyone has Read-only (4,4,4).
+* `chmod 744 file.sh` : Owner has Full (7); Group/Others have Read-only (4).
+* `chmod 644 file.sh` : Owner has Read+Write (6); Group/Others have Read-only (4).
 
-```bash
-# 444: Owner(4), Group(4), Others(4)
-# Everyone has Read-only permission.
-chmod 444 test.sh 
-
-# 744: Owner(7), Group(4), Others(4)
-# Owner has Full control (rwx); Everyone else has Read-only.
-chmod 744 test.sh
-
-```
-
----
-
-## 📂 Directory & Recursive Permissions
-
-Permissions can also be applied to Directories and applied recursively to everything inside them.
-
-```bash
-# Set permissions for a directory using Symbolic mode
-# Sets User, Group, and Others to rwx
-chmod ugo=rwx Test/
-
-# Set permissions using Octal mode
-# 644: Owner gets Read+Write; Group/Others get Read
-chmod 644 Test/
-
-# Recursive (-R)
-# Gives 777 (Full permission) to the directory AND 
-# all files/sub-folders inside it.
-chmod -R 777 Test/
-
-```
-
-```
-
-```
+#### Recursive Permissions
+* `chmod -R 777 Test/` : Gives Full permissions to `Test/` and **every file/folder inside it**.
